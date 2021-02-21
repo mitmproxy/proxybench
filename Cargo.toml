@@ -7,13 +7,16 @@ edition = "2018"
 [dependencies]
 criterion = "0.3"
 rcgen = "0.8"
-rustls = { version = "0.18" }
-hyper = "0.13"
-hyper-tls = "0.4"
-native-tls = "0.2"
-tokio = { version = "0.2", features = ["full"] }
-tokio-rustls = "0.14"
+rustls = { version = "0.19" }
+hyper = { version = "0.14", features = ["full"] }
+hyper-tls = "0.5"
+native-tls = { version = "0.2", features = ["alpn"] }
+tokio = { version = "1", features = ["full"] }
+tokio-rustls = "0.22"
+tokio-stream = "0.1"
+async-stream = "0.3.0"
 futures = "0.3"
+futures-util = "0.3"
 
 [[bench]]
 name = "proxybench"
