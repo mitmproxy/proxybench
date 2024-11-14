@@ -21,6 +21,7 @@ async fn make_requests(url: &'static str, conf: &'static Configuration) {
             .no_deflate()
             .no_brotli()
             .no_zstd()
+            .use_rustls_tls()
             .http2_initial_connection_window_size(DEFAULT_H2_WINDOW_SIZE)
             .http2_initial_stream_window_size(DEFAULT_H2_WINDOW_SIZE)
             .danger_accept_invalid_certs(true)
@@ -73,6 +74,7 @@ async fn make_requests(url: &'static str, conf: &'static Configuration) {
 
 pub fn bench(c: &mut Criterion) {
     env_logger::init();
+    rustls::crypto::aws_lc_rs::default_provider().install_default().unwrap();
     let rt = Runtime::new().unwrap();
 
     let mut confs = vec![
