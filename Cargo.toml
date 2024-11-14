@@ -5,18 +5,25 @@ authors = ["Maximilian Hils <git@maximilianhils.com>"]
 edition = "2018"
 
 [dependencies]
-criterion = "0.3"
-rcgen = "0.8"
-rustls = { version = "0.19" }
-hyper = { version = "0.14", features = ["full"] }
-hyper-tls = "0.5"
+criterion = { version = "0.5.1", features = ["async_tokio"] }
+rcgen = "0.13.1"
+rustls = { version = "0.23.16" }
+hyper = { version = "1.5.0", features = ["full"] }
+hyper-tls = "0.6.0"
 native-tls = { version = "0.2", features = ["alpn"] }
 tokio = { version = "1", features = ["full"] }
-tokio-rustls = "0.22"
+tokio-rustls = "0.26.0"
 tokio-stream = "0.1"
 async-stream = "0.3.0"
 futures = "0.3"
 futures-util = "0.3"
+hyper-util = { version = "0.1.10", features = ["full"] }
+http-body-util = "0.1.2"
+anyhow = "1.0.93"
+reqwest = { version = "0.12.9", features = ["native-tls"] }
+log = "0.4.22"
+env_logger = "0.11.5"
+bon = "3.0.0"
 
 [[bench]]
 name = "proxybench"
