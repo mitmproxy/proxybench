@@ -1,30 +1,28 @@
+use crate::conf::{Protocol, DEFAULT_H2_WINDOW_SIZE};
 use anyhow::{ensure, Error, Result};
+use http_body_util::BodyExt;
 use http_body_util::Full;
 use hyper::body::Bytes;
 use hyper::server::conn::{http1, http2};
 use hyper::service::service_fn;
 use hyper::{Request, Response};
-use http_body_util::BodyExt;
 use hyper_util::rt::{TokioExecutor, TokioIo, TokioTimer};
 use rcgen::generate_simple_self_signed;
 use rustls::pki_types::PrivatePkcs8KeyDer;
 use std::io;
 use std::io::ErrorKind;
 use std::net::SocketAddr;
-use std::sync::{Arc};
+use std::sync::Arc;
 use tokio::io::{AsyncRead, AsyncWrite};
-use tokio::net::{TcpListener};
+use tokio::net::TcpListener;
 use tokio::select;
 use tokio::task::{JoinHandle, JoinSet};
 use tokio_rustls::TlsAcceptor;
-use crate::conf::{Protocol, DEFAULT_H2_WINDOW_SIZE};
 
 pub const HUNDRED_MEGABYTES: &[u8] = &[0u8; 1024 * 1024 * 100];
 const OK: &[u8] = "OK".as_bytes();
 
-
 pub async fn start_server(configuration: Protocol) -> Result<(SocketAddr, JoinHandle<()>)> {
-
     let listener = TcpListener::bind("127.0.0.1:0").await?;
     let acceptor = match configuration {
         Protocol::PlaintextHttp1 => None,
@@ -69,6 +67,7 @@ pub async fn start_server(configuration: Protocol) -> Result<(SocketAddr, JoinHa
 
     let handle = tokio::spawn(async move {
         if let Err(e) = fut.await {
+            eprintln!("Server failed: {:?}", e);
             panic!("Server failed: {:?}", e);
         }
     });
@@ -115,14 +114,15 @@ async fn request_handler(
 ) -> Result<Response<Full<Bytes>>, Error> {
     let size = request
         .headers()
-        .get("x-response-megabytes").and_then(|s| s.to_str().ok())
+        .get("x-response-megabytes")
+        .and_then(|s| s.to_str().ok())
         .unwrap_or("0")
         .parse::<usize>()?;
     ensure!(size <= 100, "largest body size is 100mb");
     let body = if size == 0 {
         OK
     } else {
-        &HUNDRED_MEGABYTES[..1024*1024*size]
+        &HUNDRED_MEGABYTES[..1024 * 1024 * size]
     };
 
     let _ = request.collect().await?;

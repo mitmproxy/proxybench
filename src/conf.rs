@@ -19,15 +19,17 @@ pub struct Configuration {
 
 impl Debug for Configuration {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{:?} req={}mb resp={}mb, w={} reqs={} proxy={}",
-           self.protocol,
-           self.request_megabytes,
-           self.response_megabytes,
+        write!(
+            f,
+            "{:?} req={}mb resp={}mb, w={} reqs={} proxy={}",
+            self.protocol,
+            self.request_megabytes,
+            self.response_megabytes,
             self.workers,
             self.requests,
-            self.proxy.map(
-                |x| x.rsplit_once(":").map(|(_, port)| port).unwrap_or(x)
-            ).unwrap_or("/")
+            self.proxy
+                .map(|x| x.rsplit_once(":").map(|(_, port)| port).unwrap_or(x))
+                .unwrap_or("/")
         )
     }
 }
